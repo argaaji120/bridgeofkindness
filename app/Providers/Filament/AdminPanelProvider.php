@@ -2,24 +2,27 @@
 
 namespace App\Providers\Filament;
 
-use Filament\Panel;
-use Filament\PanelProvider;
-use Filament\Pages\Dashboard;
-use Filament\Support\Colors\Color;
-use Filament\Widgets\AccountWidget;
-use Filament\Navigation\NavigationGroup;
-use Filament\Widgets\FilamentInfoWidget;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
-use Illuminate\Session\Middleware\StartSession;
-use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
-use Illuminate\Routing\Middleware\SubstituteBindings;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Filament\Navigation\NavigationBuilder;
+use Filament\Navigation\NavigationGroup;
+use Filament\Navigation\NavigationItem;
+use Filament\Pages\Dashboard;
+use Filament\Panel;
+use Filament\PanelProvider;
+use Filament\Support\Colors\Color;
+use Filament\Support\Icons\Heroicon;
+use Filament\Widgets\AccountWidget;
+use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Session\Middleware\StartSession;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -37,11 +40,13 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::hex('#7AA9AC'),
                 'secondary' => Color::hex('#F2C057'),
             ])
-            ->sidebarCollapsibleOnDesktop()
+            ->favicon(asset('images/logo.png'))
+            // ->sidebarCollapsibleOnDesktop()
+            ->globalSearch(false)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
-                Dashboard::class,
+                Dashboard::class
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
@@ -61,13 +66,39 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ])->plugins([
+            ])
+            ->plugins([
                 FilamentShieldPlugin::make()
-            ])->navigationGroups([
-                NavigationGroup::make()
-                    ->label('User Management')
-                    // ->icon('heroicon-o-cog-6-tooth')
-                    ->collapsed(),
-            ]);
+                    ->navigationGroup('Setting')
+                    ->navigationSort(100)
+            ])
+            ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
+                return $builder
+                    ->items([
+                        NavigationItem::make('dashboard')
+                            ->label(fn(): string => __('filament-panels::pages/dashboard.title'))
+                            ->url(fn(): string => Dashboard::getUrl())
+                            ->isActiveWhen(fn(): bool => request()->routeIs('filament.admin.pages.dashboard')),
+                    ])
+                    ->groups([
+                        NavigationGroup::make('Landing Page')
+                            ->items([
+                                ...\App\Filament\Resources\LandingHeroes\LandingHeroResource::getNavigationItems(),
+                                ...\App\Filament\Resources\HomeCtaButtons\HomeCtaButtonResource::getNavigationItems(),
+                            ]),
+                        NavigationGroup::make('Setting')
+                            ->items([
+                                ...\App\Filament\Resources\Users\UserResource::getNavigationItems(),
+                                NavigationItem::make()
+                                    ->label('Roles')
+                                    ->icon(Heroicon::OutlinedShieldCheck)
+                                    ->activeIcon(Heroicon::ShieldCheck)
+                                    ->url(route('filament.admin.resources.shield.roles.index'))
+                                    ->isActiveWhen(fn(): bool => request()->routeIs('filament.admin.resources.shield.roles.*')),
+                            ]),
+
+                    ]);
+            })
+            ->topNavigation();
     }
 }

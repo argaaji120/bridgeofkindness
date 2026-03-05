@@ -13,21 +13,20 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use BackedEnum;
-use UnitEnum;
 
 class LandingHeroResource extends Resource
 {
     protected static ?string $model = LandingHero::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPhoto;
+
+    protected static string|BackedEnum|null $activeNavigationIcon = Heroicon::Photo;
 
     protected static ?string $recordTitleAttribute = 'LandingHero';
 
     protected static ?string $navigationLabel = 'Hero Sections';
 
     protected static ?string $modelLabel = 'hero content';
-
-    protected static string | UnitEnum | null $navigationGroup = 'Landing Page Management';
 
     public static function form(Schema $schema): Schema
     {
