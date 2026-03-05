@@ -85,6 +85,7 @@ class AdminPanelProvider extends PanelProvider
                             ->items([
                                 ...\App\Filament\Resources\LandingHeroes\LandingHeroResource::getNavigationItems(),
                                 ...\App\Filament\Resources\HomeCtaButtons\HomeCtaButtonResource::getNavigationItems(),
+                                ...\App\Filament\Resources\LandingSettings\LandingSettingResource::getNavigationItems(),
                             ]),
                         NavigationGroup::make('Setting')
                             ->items([
