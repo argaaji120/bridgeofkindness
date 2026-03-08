@@ -79,6 +79,7 @@ class AdminPanelProvider extends PanelProvider
                             ->label(fn(): string => __('filament-panels::pages/dashboard.title'))
                             ->url(fn(): string => Dashboard::getUrl())
                             ->isActiveWhen(fn(): bool => request()->routeIs('filament.admin.pages.dashboard')),
+                        ...\App\Filament\Resources\Causes\CauseResource::getNavigationItems()
                     ])
                     ->groups([
                         NavigationGroup::make('Landing Page')
