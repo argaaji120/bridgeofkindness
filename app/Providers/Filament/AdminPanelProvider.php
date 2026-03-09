@@ -90,6 +90,11 @@ class AdminPanelProvider extends PanelProvider
                                 ...\App\Filament\Resources\Testimonials\TestimonialResource::getNavigationItems(),
                                 ...\App\Filament\Resources\LandingSettings\LandingSettingResource::getNavigationItems(),
                             ]),
+                        NavigationGroup::make('News')
+                            ->items([
+                                ...\App\Filament\Resources\News\NewsResource::getNavigationItems(),
+                                ...\App\Filament\Resources\NewsCategories\NewsCategoryResource::getNavigationItems()
+                            ]),
                         NavigationGroup::make('Setting')
                             ->items([
                                 ...\App\Filament\Resources\Users\UserResource::getNavigationItems(),
